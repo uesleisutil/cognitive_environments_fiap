@@ -9,4 +9,8 @@ OBJECT_KEY=
 
 Como os dados são ocultos ao enviar para o Github, criei uma condição para ler o arquivo no diretório ./data
 
+Github: https://github.com/uesleisutil/cognitive_environments_fiap
+Streamlit:
+
+
 Abraços.
