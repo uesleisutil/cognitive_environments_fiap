@@ -7,7 +7,6 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sklearn.preprocessing import LabelEncoder
 import pickle
-import os
 
 # Função para carregar os componentes necessários
 def load_components(model_path, tokenizer_path, label_encoder_path):
@@ -20,23 +19,36 @@ def load_components(model_path, tokenizer_path, label_encoder_path):
 
 # Função de normalização do texto
 def normalize_text(text):
-    # Sua função de normalização aqui
-    pass
+    text = text.lower()
+    text = re.sub(r'\[.*?\]', '', text)
+    text = re.sub(r'https?://\S+|www\.\S+', '', text)
+    text = re.sub(r'<.*?>+', '', text)
+    text = re.sub(r'[%s]' % re.escape(string.punctuation), '', text)
+    text = re.sub(r'\n', '', text)
+    text = re.sub(r'\w*\d\w*', '', text)
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    text = re.sub(r'\d+', '', text)
+    text = re.sub(r'[^a-záéíóúàèìòùâêîôûãõäëïöüç\s]', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
 # Função para fazer predições
 def make_prediction(model, tokenizer, label_encoder, text):
-    # Sua função para fazer predições aqui
-    pass
+    max_length = 200  # Deve corresponder ao valor usado durante o treinamento
+    text = normalize_text(text)
+    sequence = tokenizer.texts_to_sequences([text])
+    padded_sequence = pad_sequences(sequence, maxlen=max_length, padding='post')
+    prediction = model.predict(padded_sequence)
+    pred_index = np.argmax(prediction, axis=1)
+    pred_label = label_encoder.inverse_transform(pred_index)[0]
+    return pred_label
 
 # Streamlit app
 def main():
     st.title('Classificador de Reclamações')
-    
-    # Obtendo o diretório do script atual e construindo os caminhos completos
-    current_dir = os.path.dirname(os.path.dirname(__file__))  # Subindo um nível no diretório
-    model_path = os.path.join(current_dir, 'model', 'model.h5')
-    tokenizer_path = os.path.join(current_dir, 'model', 'tokenizer.pkl')
-    label_encoder_path = os.path.join(current_dir, 'model', 'label_encoder.pkl')
+    model_path = './model/model.h5'
+    tokenizer_path = './model/tokenizer.pkl'
+    label_encoder_path = './model/label_encoder.pkl'
     
     model, tokenizer, label_encoder = load_components(model_path, tokenizer_path, label_encoder_path)
     
