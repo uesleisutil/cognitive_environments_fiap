@@ -12,5 +12,6 @@ Como os dados são ocultos ao enviar para o Github, criei uma condição para le
 Github: https://github.com/uesleisutil/cognitive_environments_fiap
 Streamlit:
 
+O notebook, que poderá ser usado para checar a acurácia, está em /notebook.
 
 Abraços.
